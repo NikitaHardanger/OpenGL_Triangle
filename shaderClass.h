@@ -20,6 +20,9 @@ public:
 	void _Activate();
 	// Deletes the Shader Program
 	void _Delete();
+private:
+	// Checks if the different shader have compiled properly
+	void compileErrors(unsigned int shader, const char* type);
 };
 
 #endif // !SHADER_CLASS_H

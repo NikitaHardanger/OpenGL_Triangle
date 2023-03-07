@@ -6,7 +6,9 @@
 class VBO
 {
 public:
+	// ID reference for te Vertex Buffer Object
 	GLuint ID;
+	// Constructor that gemerates a VBO ID
 	VBO(GLfloat* vertices, GLsizeiptr size);
 
 	void Bind();
