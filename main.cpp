@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb/stb_image.h>
 
 #include "shaderClass.h"
 #include "VAO.h"
@@ -9,7 +10,7 @@
 
 
 
-// Vertices coordinates
+/*// Vertices coordinates TRIANGLE
 GLfloat vertices[] =
 {    //    COORDINATES                      //    COLORS             ||
 	-0.5f, -0.5f * float(sqrt(3)) / 3,		0.0f,	0.8f, 0.3f,  0.02f,	// LEFT vertice
@@ -21,11 +22,31 @@ GLfloat vertices[] =
 	 0.0f, -0.5f * float(sqrt(3)) / 3,		0.0f,	0.8f, 0.3f,  0.02f	// Inner down
 };
 
+
 GLuint indices[] =
 {
 	0, 3, 5, // Lower left triangle
 	3, 2, 4, // Lower right triangle
 	5, 4, 1 // Upper triangle
+};*/
+
+// Vertices coordinates SQUARE
+GLfloat vertices[] =
+{    //    COORDINATES      //    COLORS             ||
+	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f,  0.0f, // LEFT vertice
+	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f,  1.0f, // RIGHT vertice
+	 0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f,  1.0f, // UPPER vertice
+	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f,  0.0f, // UPPER vertice
+
+	-0.25f, 0.5f * float(sqrt(3)) / 6,		0.0f,	0.9f, 0.45f, 0.17f,	// Inner left
+	 0.25f, 0.5f * float(sqrt(3)) / 6,		0.0f,	0.9f, 0.45f, 0.17f,	// Inner right
+	 0.0f, -0.5f * float(sqrt(3)) / 3,		0.0f,	0.8f, 0.3f,  0.02f	// Inner down
+};
+
+GLuint indices[] =
+{
+	0, 2, 1,	// Upper triangle
+	0, 3, 2		// Lower triangle
 };
 
 int main() 
@@ -76,15 +97,45 @@ int main()
 	// Generate Element Buffer Object links it to vertices
 	EBO EBO1(indices, sizeof(indices));
 
-	// Links VBO to VAO
-	VAO1.linkAttribute(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	VAO1.linkAttribute(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	// Links VBO attributes such a coordinates and colors to VAO
+	VAO1.linkAttribute(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
+	VAO1.linkAttribute(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.linkAttribute(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	// Unbind all to prevent accidentally modifying
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
 
+	// Gets ID of uniform called "scale"
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+
+	// Texture
+
+	int widthImg, heightImg, numColCh;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* bytes = stbi_load("cat.png", &widthImg, &heightImg, &numColCh, 0);
+
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(bytes);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	GLuint texture0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
+	shaderProgram._Activate();
+	glUniform1i(texture0Uni, 0);
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
@@ -92,11 +143,12 @@ int main()
 		// Set Color for background
 		glClearColor(0.235f, 0.173f, 0.388f, 1.0f);
 		// Clean the back buffer and assign the new color to it
-
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		// Tell OpenGL which Shader Program we want to use
 		shaderProgram._Activate();
+		// Assigns a value to the uniform;
 		glUniform1f(uniID, 0.5f);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		VAO1.Bind();
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
@@ -112,6 +164,7 @@ int main()
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
+	glDeleteTextures(1, &texture);
 	shaderProgram._Delete();
 
 	// Delete window before ending program

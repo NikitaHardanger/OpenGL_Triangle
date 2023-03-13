@@ -19,6 +19,9 @@
     <Filter Include="Файлы ресурсов\Shaders">
       <UniqueIdentifier>{0594a8f0-7c74-4f88-8954-2ac8cd9cdd90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Textures">
+      <UniqueIdentifier>{7c955757-e0d6-45fd-8f2b-c3b0810181ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -37,6 +40,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="VAO.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="stb.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,5 +69,19 @@
     <None Include="default.frag">
       <Filter>Файлы ресурсов\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Users\Nikit\Downloads\LogoGit.png">
+      <Filter>Файлы ресурсов\Textures</Filter>
+    </Image>
+    <Image Include="pop_cat.png">
+      <Filter>Файлы ресурсов\Textures</Filter>
+    </Image>
+    <Image Include="Bird.png">
+      <Filter>Файлы ресурсов\Textures</Filter>
+    </Image>
+    <Image Include="cat.png">
+      <Filter>Файлы ресурсов\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

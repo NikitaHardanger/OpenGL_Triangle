@@ -12,7 +12,7 @@ public:
 	// Constructor that gemerates a VAO ID
 	VAO();
 
-	// LINKS a VBO to the VAO using a certain layout
+	// LINKS a VBO attributes to the VAO using a certain layout
 	void linkAttribute(VBO VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset);
 	// Bind the VAO
 	void Bind();
